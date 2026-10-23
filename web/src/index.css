@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+}
+
+/* Home page and sign-in brand panel. Motion is decoration only and stops for
+   anyone who asks the system for less of it. */
+@keyframes nc-flow {
+  to { stroke-dashoffset: -40; }
+}
+@keyframes nc-pulse {
+  0%, 100% { opacity: .35; transform: scale(1); }
+  50% { opacity: .8; transform: scale(1.08); }
+}
+@keyframes nc-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.nc-flow { stroke-dasharray: 4 6; animation: nc-flow 2.4s linear infinite; }
+.nc-pulse { transform-box: fill-box; transform-origin: center; animation: nc-pulse 3.2s ease-in-out infinite; }
+.nc-float { animation: nc-float 6s ease-in-out infinite; }
+.nc-grid {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / .07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / .07) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nc-flow, .nc-pulse, .nc-float { animation: none; }
+}
+
+/* V3 P: console motion and feedback. Everything here is short (120-220 ms),
+   moves at most a few pixels, and is switched off below for anyone who asks
+   the system for less motion. */
+@keyframes nc-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nc-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes nc-pop {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nc-toast-in {
+  from { opacity: 0; transform: translateY(8px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes nc-toast-out {
+  to { opacity: 0; transform: translateX(16px); }
+}
+@keyframes nc-shimmer {
+  100% { transform: translateX(100%); }
+}
+@keyframes nc-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+.nc-enter { animation: nc-enter .2s ease-out backwards; }
+.nc-fade { animation: nc-fade .18s ease-out backwards; }
+.nc-pop { animation: nc-pop .2s cubic-bezier(.2, .8, .3, 1) backwards; }
+.nc-toast-in { animation: nc-toast-in .22s cubic-bezier(.2, .8, .3, 1) backwards; }
+.nc-toast-out { animation: nc-toast-out .16s ease-in both; }
+.nc-progress { transform-origin: left; animation: nc-progress linear both; }
+/* Skeleton blocks: a soft sweep over a neutral bar. */
+.nc-skeleton { position: relative; overflow: hidden; }
+.nc-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .55), transparent);
+  animation: nc-shimmer 1.4s ease-in-out infinite;
+}
+.dark .nc-skeleton::after { background: linear-gradient(90deg, transparent, rgb(255 255 255 / .06), transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .nc-enter, .nc-fade, .nc-pop, .nc-toast-in, .nc-toast-out { animation: none; }
+  .nc-skeleton::after { animation: none; }
+  .nc-progress { animation: none; transform: scaleX(0); }
+  *, *::before, *::after { transition-duration: 0s !important; scroll-behavior: auto !important; }
+}
+
+/* Keyboard focus is always visible, on links, tabs and toggles too. */
+:is(a, summary, [role="tab"], [tabindex]):focus-visible:not(.focus-visible\:ring-2) {
+  outline: 2px solid var(--color-indigo-500, #6366f1);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+input[type="checkbox"],
+input[type="radio"] { accent-color: var(--color-indigo-600, #4f46e5); }
+:root { scroll-padding-top: 4.5rem; }
+
+/* Tables that turn into cards on a phone (components/ui Table). Each cell
+   carries its column name in data-label; the first cell is the card title and
+   a cell whose column has no name (actions) becomes the card's button row. */
+@media (max-width: 639px) {
+  .nc-cards thead { display: none; }
+  .nc-cards, .nc-cards tbody { display: block; }
+  .nc-cards tbody > tr {
+    display: block;
+    padding: 0.75rem 1.25rem;
+  }
+  .nc-cards tbody > tr > :is(td, th) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.2rem 0;
+    white-space: normal;
+    text-align: right;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .nc-cards tbody > tr > :is(td, th)::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    text-align: left;
+    font-size: 0.75rem;
+    color: var(--color-slate-500, #64748b);
+  }
+  .nc-cards tbody > tr > :is(td, th):first-child {
+    display: block;
+    text-align: left;
+    padding-bottom: 0.4rem;
+    font-weight: 500;
+  }
+  .nc-cards tbody > tr > :is(td, th):first-child::before,
+  .nc-cards tbody > tr > :is(td, th)[data-label=""]::before { content: none; }
+  .nc-cards tbody > tr > :is(td, th)[data-label=""] {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+  }
+  .nc-cards tbody > tr > :is(td, th):empty,
+  .nc-cards tbody > tr > :is(td, th)[colspan] { display: block; text-align: center; }
+  .nc-cards tbody > tr > :is(td, th)[colspan]::before { content: none; }
+}
