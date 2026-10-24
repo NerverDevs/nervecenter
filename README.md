@@ -71,10 +71,15 @@
 
 添加渠道时粘贴面板地址，系统会识别它是 new-api 还是 sub2api，识别不出来可以手动选。
 
-登录在你自己的浏览器里完成：正常登录面板、照常完成验证码，再按页面上的图文教程把登录凭据复制过来（“从浏览器复制登录（F12）”）。不用装任何东西，带验证码、人机验证的站点也没有问题。
+接入的难点在于面板只认浏览器里的登录，而登录往往带验证码。所以登录始终由你本人完成，有三种办法，添加渠道时页面上会列出当前开放的几种（开放哪几种由站点运营方决定）：
 
-- **new-api**：推荐“一行命令 + 面板密码”，在面板标签页的控制台运行一行命令，输入一次面板密码，自动生成访问令牌（180 天后过期，到时重新授权）。也可以复制 Cookie，或在面板里手动创建访问令牌。
-- **sub2api**：在面板标签页的控制台运行一行命令复制登录凭据，然后立刻清除网站数据，再粘贴回来。
+- **从浏览器复制登录（F12，默认）**：在你自己的浏览器里正常登录面板，验证码照常完成，再按页面上的图文教程把登录凭据复制过来。不用装任何东西。
+  - **new-api**：推荐“一行命令 + 面板密码”，在面板标签页的控制台运行一行命令，输入一次面板密码，自动生成访问令牌（180 天后过期，到时重新授权）。也可以复制 Cookie，或在面板里手动创建访问令牌。
+  - **sub2api**：在面板标签页的控制台运行一行命令复制登录凭据，然后立刻清除网站数据，再粘贴回来。
+- **浏览器扩展**：在你自己的浏览器里登录面板，由 NerveCenter Connector 扩展把登录交给我们。站内直接下载 zip，解压后手动加载（不在应用商店里），用一次性配对码和账号配对一次即可，之后不用再填服务器地址。只支持 Chrome、Edge 这类 Chromium 浏览器。适合要接入好几个面板的人。
+- **云浏览器**：在我们服务器上的临时浏览器里打开面板自己的登录页，你照常登录、完成验证码，我们只保存登录后的会话。本机什么都不用装。这台浏览器用完即弃，同时在用的数量有限。注意：云浏览器里不能用第三方账号登录（如“用 Google 登录”），这种账号请用前两种方式。
+
+三种方式保存下来的东西是一样的，接入之后没有区别。
 
 添加时可以选“仅自己”或“团队共享”。首次同步一般要一两分钟，还会回溯一段历史用量。每个渠道接入后会逐项检测面板能力，每天复检一次；面板没有某项功能时会直接说明原因，不会莫名报错。
 
@@ -82,6 +87,7 @@
 <summary><b>支持的面板与限制</b></summary>
 
 - 支持 new-api（以及能识别出的改版面板）和 sub2api。其他面板会提示“该地址上没有找到支持的面板”。
+- 云浏览器里不能用第三方账号登录（如“用 Google 登录”）；浏览器扩展需手动加载，不在 Chrome 应用商店里，只支持 Chromium 浏览器。
 - 无法代你完成通行密钥（Passkey）验证。只能用通行密钥验证的 new-api 账号用不了“一行命令”，请改用复制 Cookie 或手动创建访问令牌。
 - 部分 sub2api 站点会把登录和 IP、浏览器绑定，复制过来的登录可能被站点撤销，这时需要重新授权。
 - 健康数据只在较新版本的 new-api，或开了渠道监控的 sub2api 上才有。
@@ -144,7 +150,7 @@
 
 ## 完整产品介绍
 
-每项功能的细节、限制和常见问题，在网站的[产品介绍页](https://nvcenter.cc/intro)和本仓库的 [docs/product-intro.zh.md](docs/product-intro.zh.md) 里。
+每项功能的细节、限制和常见问题，在网站的[产品介绍页](https://nvcenter.cc/intro)和本仓库的 [docs/product-intro.zh.md](docs/product-intro.zh.md) 里（English: [docs/product-intro.en.md](docs/product-intro.en.md)）。
 
 <p align="center">
   <img src="docs/images/intro-page.jpg" alt="nvcenter.cc 产品介绍页：左侧目录，右侧是“为什么做它”和“它能帮你做什么”">
@@ -154,6 +160,7 @@
 
 ```
 docs/product-intro.zh.md          完整产品介绍（中文）
+docs/product-intro.en.md          Full product introduction (English)
 docs/images/                      README 用到的网站截图
 web/src/pages/Landing.tsx         首页
 web/src/pages/Intro.tsx           产品介绍页
@@ -197,7 +204,13 @@ NerveCenter brings your accounts on many **new-api** and **sub2api** relay panel
 
 ### Connecting a panel
 
-Paste the panel address and NerveCenter detects new-api or sub2api. You sign in to the panel in your own browser, captcha and all, then copy the sign-in over following the illustrated steps on the page. Nothing to install. On new-api the recommended way is one console command plus your panel password, which creates an access token; the password goes only to the panel. Other panels are not supported.
+Paste the panel address and NerveCenter detects new-api or sub2api. You always sign in yourself, captcha and all, in one of three ways; the add page lists whichever the site has open.
+
+- **Copy the sign-in from your browser (F12, the default)** — sign in to the panel in your own browser, then copy the sign-in over following the illustrated steps. Nothing to install. On new-api the recommended route is one console command plus your panel password, which creates an access token; the password goes only to the panel.
+- **Browser extension** — sign in to the panel in your own browser and the NerveCenter Connector extension hands the sign-in over. Downloaded from the site and loaded unpacked (not in the Chrome Web Store), paired to your account once with a one-time code. Chromium browsers only.
+- **Cloud browser** — the panel's own sign-in page opens in a throwaway browser on our server. You sign in as usual and we keep only the resulting session. Third-party sign-in ("continue with Google") does not work there; use one of the other two for such an account.
+
+All three store the same thing, and a channel behaves the same once connected. Other panel software is not supported.
 
 ### Security
 
@@ -216,12 +229,12 @@ The site fits a phone screen, and the official Telegram bot [@NerverCenter_bot](
 2. Add a channel: paste the panel address and follow the steps on the page.
 3. In a minute or two your balances, keys and usage appear on the dashboard. Set a balance alert, connect Telegram and turn on two-step verification.
 
-Full details (Chinese): [docs/product-intro.zh.md](docs/product-intro.zh.md) · https://nvcenter.cc/intro
+Full details: [docs/product-intro.en.md](docs/product-intro.en.md) (English) · [docs/product-intro.zh.md](docs/product-intro.zh.md) (中文) · https://nvcenter.cc/intro
 
 This repository holds only the product introduction, a few screenshots of the site and a small excerpt of the web front end, for reference. It isn't the full source and doesn't build on its own. NerveCenter is a closed-source service: https://nvcenter.cc
 
 ## 版权 / Copyright
 
-© NerveCenter. 保留所有权利。本仓库代码仅供展示，未授予开源许可。
+© NerveCenter. 保留所有权利。本仓库代码仅供展示，未授予开源许可。详见 [LICENSE](LICENSE)。
 
-All rights reserved. The code here is shown for reference only; no open-source licence is granted.
+All rights reserved. The code here is shown for reference only; no open-source licence is granted. See [LICENSE](LICENSE).
